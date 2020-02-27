@@ -40,7 +40,10 @@ function websiteResponseTimes(websites) {
         checkResponseTime(website, (err, result) => {
             if (count < websites.length) {
                 if (!err) {
-                    responseful.push({ site: result.site, responseTime: result.responseTime });
+                    responseful.push({
+                        site: result.site,
+                        responseTime: result.responseTime
+                    });
                     // console.log(result);
                 } else {
                     errors.push(result.site);
@@ -58,33 +61,33 @@ function websiteResponseTimes(websites) {
             // console.log(count);
         })
     });
-};//end of function
+}; //end of function
 
 const websites = [{
-    site: 'yahoo.com',
-    responseTime: 50,
-    unit: 'ms'
-},
-{
-    site: 'google.com',
-    responseTime: 10,
-    unit: 'ms'
-},
-{
-    site: 'reddit.com',
-    responseTime: null,
-    unit: 'ms'
-},
-{
-    site: 'slack.com',
-    responseTime: 80,
-    unit: 'ms'
-},
-{
-    site: 'github.com',
-    responseTime: 30,
-    unit: 'ms'
-}
+        site: 'yahoo.com',
+        responseTime: 50,
+        unit: 'ms'
+    },
+    {
+        site: 'google.com',
+        responseTime: 10,
+        unit: 'ms'
+    },
+    {
+        site: 'reddit.com',
+        responseTime: null,
+        unit: 'ms'
+    },
+    {
+        site: 'slack.com',
+        responseTime: 80,
+        unit: 'ms'
+    },
+    {
+        site: 'github.com',
+        responseTime: 30,
+        unit: 'ms'
+    }
 ];
 
 websiteResponseTimes(websites);
@@ -119,8 +122,7 @@ It prints an object with the keys 'found' and 'missing' which contain the array 
 It ONLY console.logs when all accounts been processed.
  */
 
-const database = [
-    {
+const database = [{
         id: 1,
         entry: 'Space X',
         twitter: '@spacex'
@@ -146,10 +148,96 @@ const database = [
         twitter: null
     }
 ];
+
+function bucketTwitters(account) {
+    let handle = account.twitter;
+    return new Promise((resolve, reject) => {
+        setTimeout(function () {
+            if (handle === null) {
+                reject(account);
+            } else {
+                resolve(account);
+            }
+        }, 10)
+    })
+};
+
+function loopAccountsPromises(database) {
+    let found = [];
+    let missing = [];
+    setTimeout(() => {
+        console.log('\nFound:')
+        console.log(found);
+        console.log('Missing:')
+        console.log(missing);
+    }, 1000);
+    database.forEach(data => {
+        bucketTwitters(data)
+            .then(result => {
+                found.push(result);
+                // console.log(found);
+            })
+            .catch(error => {
+                missing.push(error);
+                // console.log(missing);
+            });
+        });
+};
+
 loopAccountsPromises(database);
 
 // Expected Output:
 // {
+//     found: [
+//         { id: 1, entry: 'Space X', twitter: '@spacex' },
+//         { id: 3, entry: 'Apple', twitter: '@apple' },
+//         { id: 4, entry: 'Microsoft', twitter: '@microsoft' }
+//     ],
+//     missing: [
+//         { id: 2, entry: 'NASA', twitter: null },
+//         { id: 5, entry: 'Reddit', twitter: null }
+//     ]
+// }
+
+/**Question 3
+ * Using async/await syntax and bucketTwitters() function from Problem #2 that performs operations the given db. (10)
+Requirements:
+
+Use async/await syntax with try/catch
+
+Use the same database provides from Problem #2
+
+Use the same Promise function (bucketTwitters()) created from Problem #2.
+
+bucketTwitters(account) - Use the Same Function Created for Problem #2
+
+loopAccountsAsync(database) This function accepts an array of objects to be evaluated.
+
+It prints an object with the keys 'found' and 'missing' which contain the array of found and missing twitter accounts.
+ */
+
+function loopAccountsAsync(database) {
+    let found = [];
+    let missing = [];
+    database.forEach(async data => {
+        try {
+            found.push(await bucketTwitters(data));
+        } catch(error) {
+            missing.push(error);
+        }
+    });
+    setTimeout(function () {
+        console.log('\nAsync Found:')
+        console.log(found);
+        console.log('Missing:')
+        console.log(missing);
+    }, 2000);
+}
+
+loopAccountsAsync(database);
+
+//  // Expected Output:
+//  {
 //     found: [
 //         { id: 1, entry: 'Space X', twitter: '@spacex' },
 //         { id: 3, entry: 'Apple', twitter: '@apple' },
